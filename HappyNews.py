@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
 Created on Thu Mar  3 12:33:51 2016
@@ -7,8 +8,7 @@ Created on Thu Mar  3 12:33:51 2016
 
 import requests
 import argparse
-import sys
-keyword = "microsoft"
+
 def find_happiest_article(results):
     maxV = 0
     maxI = 0
@@ -30,16 +30,16 @@ def find_saddest_article(results):
     return results[minI]['source']['enriched']['url']
 
 parser = argparse.ArgumentParser(description='Happy News')
-parser.add_argument('Keyword',  type=str, nargs='?', help='keyword to search')
+parser.add_argument('Keyword',  type=str, nargs='?', help='keyword to search',default="Google")
 parser.add_argument('--sad', const=find_saddest_article, default=find_happiest_article, nargs='?')
 #url = 'http://gateway-a.watsonplatform.net/calls/data/GetNews?apikey=2aa9eb057b743ba8eb9f9be88ce140ea82521844&outputMode=json&start=now-1d&end=now&count=100&q.enriched.url.enrichedTitle.relations.relation=|action.verb.text=acquire,object.entities.entity.type=Company|&return=enriched.url'
 args = parser.parse_args()
-
+keyword = args.Keyword
 
 #sys.exit()
 
 API_KEY = open('API-KEY','r').readline().replace('\n','')
-url = 'http://gateway-a.watsonplatform.net/calls/data/GetNews?outputMode=json&start=now-30d&end=now&count=5&q.enriched.url.enrichedTitle.keywords.keyword.text='+keyword+'&return=enriched.url.url,enriched.url.title,enriched.url.docSentiment&apikey='+API_KEY
+url = 'https://gateway-a.watsonplatform.net/calls/data/GetNews?outputMode=json&start=now-30d&end=now&count=5&q.enriched.url.enrichedTitle.keywords.keyword.text='+keyword+'&return=enriched.url.url,enriched.url.title,enriched.url.docSentiment&apikey='+API_KEY
 response = requests.get(url)
 data = response.json()
 ok_flag = str(data['result']['status']) == 'OK'
@@ -49,12 +49,12 @@ results  =data['result']['docs']
 
 
 
-best_result = find_happiest_article(results)
+best_result = args.sad(results)
 
 title = str(best_result['title'])
 link = str(best_result['url'])
-print title
-print link
+print (title)
+print (link)
 #sentiments = best_result['docSentiment']
 #sentiment_score = sentiments['score']
 #sentiment_positive = str(sentiments['type']) == 'positive'
