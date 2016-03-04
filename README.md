@@ -1,5 +1,6 @@
 # SentimentNews
 ##Only Python3
+###(May now work with python2)
 News that makes you happy
 
 
